@@ -1,0 +1,30 @@
+{
+  "name": "discord-bot",
+  "version": "0.0.1",
+  "description": "a bot for Discord",
+  "engines": {
+    "node": "8.5.0"
+  },
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "cheerio": "^0.22.0",
+    "cleverbot.io": "^1.0.4",
+    "curl-to-json": "^1.0.24",
+    "discord.js": "^11.2.1",
+    "discord.js-commando": "github:gawdl3y/discord.js-commando",
+    "events": "^1.1.1",
+    "express": "^4.15.2",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "request": "^2.81.0"
+  },
+  "keywords": [
+    "node",
+    "discord",
+    "bot"
+  ],
+  "license": "MIT"
+}
