@@ -19,7 +19,7 @@ module.exports = class RollCommand extends Command {
             argsCount: 2,
             argsType: "multiple",
             throttling: {
-				usages: 1,
+				usages: 5,
 				duration: 10
             }
         });
@@ -29,6 +29,7 @@ module.exports = class RollCommand extends Command {
         var minimumRarity = this.parseFilterLevel(args);
 
         var results = [];
+        var SSRCount = 0;
 		// Would be possible to do all the tenth draws first and then all the 270 remaining but, in the 
 		// spirit of doing the same as a real spark, let loop 30 times on a 10-draw
 		for (var i = 0; i < SPARK_DRAW_COUNT / 10; i ++) {
@@ -37,11 +38,19 @@ module.exports = class RollCommand extends Command {
                 var rarity = this.getRarity(draw);
                 if (rarity >= minimumRarity) {
                     results.push(this.createDescription(draw, rarity));
+                    if (rarity == SSR) {
+                        SSRCount++;
+                    }
                 }
 			}
-		}
+        }
+        
+        var msg = "```md\nYou got " + SSRCount + " SSRs (" + (SSRCount/SPARK_DRAW_COUNT*100).toFixed(2) + "%): " + results.join(", ")+"\n```";
+        if (msg.length > 2000) {
+            msg = msg.substr(0, 1992) + "...\n```";
+        }
 
-        message.channel.send("```md\nYou got " + results.join(", ")+"\n```");
+        message.channel.send(msg);
     }
 	
 	createDescription(draw, rarity) {
