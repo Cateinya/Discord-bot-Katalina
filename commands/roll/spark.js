@@ -16,8 +16,7 @@ module.exports = class RollCommand extends Command {
             description: 'Performs a spark using 30 10-part draws.',
             details : 'Add "SSR" to filter the spark result to keep only the SSR draws',
             examples: ['!spark', '!spark SSR'],
-            argsCount: 2,
-            argsType: "multiple",
+            argsCount: 0,
             throttling: {
 				usages: 5,
 				duration: 10
@@ -26,9 +25,8 @@ module.exports = class RollCommand extends Command {
     }
     
     async run(message, args) {
-        var minimumRarity = this.parseFilterLevel(args);
-
-        var results = [];
+        var weapons = [];
+        var summons = [];
         var SSRCount = 0;
 		// Would be possible to do all the tenth draws first and then all the 270 remaining but, in the 
 		// spirit of doing the same as a real spark, let loop 30 times on a 10-draw
@@ -36,37 +34,35 @@ module.exports = class RollCommand extends Command {
 			for (var j = 0; j < 10; j++ ){
 				var draw = rng.draw(j == 9, false);
                 var rarity = this.getRarity(draw);
-                if (rarity >= minimumRarity) {
-                    results.push(this.createDescription(draw, rarity));
-                    if (rarity == SSR) {
-                        SSRCount++;
+                if (rarity >= SSR) {
+                    if(this.isWeapon(draw)) {
+                        weapons.push(this.createSSRDescription(draw, rarity));
+                    } else {
+                        summons.push(this.createSSRDescription(draw, rarity));
                     }
                 }
 			}
         }
+
+        weapons.sort();
+        summons.sort();
+
+        var total = weapons.length + summons.length;
         
-        var msg = "```md\nYou got " + SSRCount + " SSRs (" + (SSRCount/SPARK_DRAW_COUNT*100).toFixed(2) + "%): " + results.join(", ")+"\n```";
+        var msg = "```ml\nYou Got " + total + " SSRs (" + (total/SPARK_DRAW_COUNT*100).toFixed(2) + "%):\n\n'Weapons': " + weapons.join(", ") + "\n\n'Summons': " + summons.join(", ") + "\n```";
         if (msg.length > 2000) {
             msg = msg.substr(0, 1992) + "...\n```";
         }
 
         message.channel.send(msg);
     }
+
+    isWeapon(draw) {
+        return draw.includes('(');
+    }
 	
-	createDescription(draw, rarity) {
-		return rarity == SSR ? "<" + draw + ">" : draw;
-	}
-	
-	parseFilterLevel(args) {
-		if (args.length > 0) {
-			var filterArg = args[0];
-			if (filterArg == 'SSR') {
-				return SSR;
-			}
-		}
-		
-		// Default to no filter if there's no or bad argument
-		return SR;
+	createSSRDescription(draw, rarity) {
+		return draw.substring(8, draw.length).replace('(','("').replace(')','")');
 	}
     
     getRarity(draw) {
