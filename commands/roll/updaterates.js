@@ -36,23 +36,23 @@ module.exports = class UpdateRatesCommand extends Command {
             try{
                 var fileURL = curlToJson(arg);
             } catch (err) {
-                this.printErrorMessage(message, "An error occured while retrieving the cURL. Did you submit a correct one?");
+                this.printErrorMessage(message, "an error occured while retrieving the cURL. Did you submit a correct one?");
             }
             
         } else {
-            this.printErrorMessage(message, "You need to either provide an attachment or an URL!");
+            this.printErrorMessage(message, "you need to either provide an attachment or an URL!");
         }
 
         if (fileURL != 'undefined' && fileURL){
             request.get(fileURL, function(error, response, body) {
                 if(error){
-                    this.printErrorMessage(message, "An error ocurred while retrieving the rates. Did you submit the correct URL or file?");
+                    this.printErrorMessage(message, "an error ocurred while retrieving the rates. Did you submit the correct URL or file?");
                     return;
                 } else {
                     if (rateParser.parse(body)){
                         message.channel.send("Rates updated!");
                     } else {
-                        this.printErrorMessage(message, "An error occured while processing the rates. Did you submit the correct JSON file?")
+                        this.printErrorMessage(message, "an error occured while processing the rates. Did you submit the correct JSON file?")
                         return;
                     }
                 }

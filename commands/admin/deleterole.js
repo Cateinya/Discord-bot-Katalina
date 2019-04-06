@@ -15,6 +15,7 @@ module.exports = class DeleteRoleCommand extends Command {
             details: 'You can provide more than one role to be deleted. To do so, just add them separated by a white space.',
             format: '<role> [anotherRole ...]',
             examples: ['!deleterole Wind', '!deleteroles Light Dark'],
+            argsType: "multiple",
             throttling: {
 				usages: 5,
 				duration: 10
@@ -24,41 +25,44 @@ module.exports = class DeleteRoleCommand extends Command {
 
     hasPermission(msg) {
 		if(this.client.options.selfbot) return true;
-		if(!msg.guild) return this.client.isOwner(msg.author);
 		return msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
     }
     
     async run(message, args) {
         try{
-        var guild = message.guild;
-        if(guild != null){
-            var bot = guild.me;
-            if(args != 'undefined' && args != null) {
-                var argsList = args.split(/\s+/);
-                var rolesToDelete = [];
+            var guild = message.guild;
+            if(guild != null){
+                var bot = guild.me;
+                if(args.length > 0) {
 
-                for (var i = 0; i < argsList.length; i++){
-                    var arg = argsList[i].toLowerCase();
-                    if(arg in roles.data){
-                            rolesToDelete.push(arg);
-                    }else{
-                        this.printErrorMessage(message, "This role does not exists.");
-                        return;
+                    var rolesGuild = roles.get(guild.id);
+                    if (rolesGuild == 'undefined' || rolesGuild == null) rolesGuild = [];
+
+                    var rolesError = [];
+
+                    for (var i = 0; i < args.length; i++){
+                        var arg = args[i];
+                        if(rolesGuild.indexOf(arg) > -1){
+                            rolesGuild.splice( rolesGuild.indexOf(arg), 1 );
+                        }else{
+                            rolesError.push(arg + " (Not found)");
+                        }
                     }
+
+                    roles.set(guild.id, rolesGuild);
+
+                    if (rolesError.length == 0){
+                        this.printMessage(message, 'Role(s) deleted');
+                    } else {
+                        this.printErrorMessage(message, "some role(s) could not be deleted: " + rolesError.join(", "));
+                    }
+
+                } else {
+                    this.printErrorMessage(message, "you need to provide at least one argument");
                 }
-
-                roles.removeAll(rolesToDelete);
-
-                this.printMessage(message, 'Role(s) deleted');
-
             } else {
-                this.printErrorMessage(message, "You need to provide at least one argument.");
-                return;
+                this.printErrorMessage(message, "you can not delete a role here!");
             }
-        } else {
-            this.printErrorMessage(message, "You can not delete a role here!");
-            return;
-        }
         } catch (e){
             console.log(e);
         }

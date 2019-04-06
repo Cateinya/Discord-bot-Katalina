@@ -15,6 +15,7 @@ module.exports = class CreateRoleCommand extends Command {
             details: 'You can provide more than one role to be created. To do so, just add them separated by a white space.',
             format: '<role> [anotherRole ...]',
             examples: ['!createrole Wind', '!createroles Light Dark'],
+            argsType: "multiple",
             throttling: {
 				usages: 5,
 				duration: 10
@@ -24,53 +25,54 @@ module.exports = class CreateRoleCommand extends Command {
 
     hasPermission(msg) {
 		if(this.client.options.selfbot) return true;
-		if(!msg.guild) return this.client.isOwner(msg.author);
 		return msg.member.hasPermission('ADMINISTRATOR') || this.client.isOwner(msg.author);
     }
     
     async run(message, args) {
         try{
-        var guild = message.guild;
-        if(guild != null){
-            var bot = guild.me;
-            if(args != 'undefined' && args != null) {
-                var argsList = args.split(/\s+/);
-                var rolesToCreate = {};
+            var guild = message.guild;
+            if(guild != null){
+                var bot = guild.me;
+                if(args.length > 0) {
 
-                for (var i = 0; i < argsList.length; i++){
-                    var arg = argsList[i];
-                    if(!roles.get(arg.toLowerCase())){
-                        
-                        var role = message.guild.roles.find('name', arg);
-                        if (role != null) {
-                            if(bot.highestRole.comparePositionTo(role) > 0) {
-                                rolesToCreate[role.name.toLowerCase()] = role.name;
+                    var rolesGuild = roles.get(guild.id);
+                    if (rolesGuild == 'undefined' || rolesGuild == null) rolesGuild = [];
+
+                    var rolesError = [];
+
+                    for (var i = 0; i < args.length; i++){
+                        var arg = args[i];
+                        if(rolesGuild.indexOf(arg) == -1){
+                            
+                            var role = message.guild.roles.find(role => role.name === arg);
+                            if (role != null) {
+                                if(bot.highestRole.comparePositionTo(role) > 0) {
+                                    rolesGuild.push(role.name);
+                                } else {
+                                    rolesError.push(role.name + " (Higher than bot)");
+                                }
                             } else {
-                                this.printErrorMessage(message, 'Sorry, I can\' handle this role...');
-                                return;
+                                rolesError.push(arg + " (Not found)");
                             }
-                        } else {
-                            this.printErrorMessage(message, 'Failed to create role(s) (check capitalization?).');
-                            return;
+                        }else{
+                            rolesError.push(arg + " (Already exists)");
                         }
-                    }else{
-                        this.printErrorMessage(message, "This role already exists.");
-                        return;
                     }
+
+                    roles.set(guild.id, rolesGuild);
+
+                    if (rolesError.length == 0){
+                        this.printMessage(message, 'Role(s) created');
+                    } else {
+                        this.printErrorMessage(message, "some role(s) could not be created: " + rolesError.join(", "));
+                    }
+
+                } else {
+                    this.printErrorMessage(message, "you need to provide at least one argument");
                 }
-
-                roles.setAll(rolesToCreate);
-
-                this.printMessage(message, 'Role(s) created');
-
             } else {
-                this.printErrorMessage(message, "You need to provide at least one argument.");
-                return;
+                this.printErrorMessage(message, "you can not create a role here!");
             }
-        } else {
-            this.printErrorMessage(message, "You can not create a role here!");
-            return;
-        }
         } catch (e){
             console.log(e);
         }

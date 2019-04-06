@@ -1,6 +1,4 @@
 const { Command } = require('discord.js-commando');
-const fs = require('fs');
-const path = require('path');
 const aliases = require('../../lib/aliases');
 
 module.exports = class AliasListCommand extends Command {
@@ -22,16 +20,35 @@ module.exports = class AliasListCommand extends Command {
     }
     
     async run(message, args) {
+
         const messages = [];
         try {
-            messages.push(await message.direct("\nList of all available aliases:\n```" +
-                Object.keys(aliases.data).map(key =>  key + " => " + aliases.get(key)).join(", ") + "\n```"
-            ));
-            
-            if(message.channel.type !== 'dm') messages.push(await message.reply('Sent you a DM with the list.'));
+            var id;
+            var guild = message.guild;
+            if(guild != null){
+                id = guild.id;
+            } else {
+                id = message.channel.id;
+            } 
+
+            var aliasesServer = aliases.get(id);
+            if(aliasesServer && Object.keys(aliasesServer).length > 0){
+                messages.push(await message.direct("List of all available aliases:\n"
+                    + Object.keys(aliasesServer).map(function(key){
+                        return aliasesServer[key];
+                    }).join(", ")
+                ));
+
+                messages.push(await message.reply('sent you a DM with the list.'));
+
+            } else {
+                messages.push(await message.reply("there are no aliases on this server!"));
+            }
         } catch(err) {
-            messages.push(await message.reply('Unable to send you the help DM. You probably have DMs disabled.'));
+            console.log(err);
+            messages.push(await message.reply('unable to send you the help DM. You probably have DMs disabled.'));
         }
+
         return messages;
     }
 }

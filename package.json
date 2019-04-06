@@ -10,16 +10,18 @@
     "start": "node index.js"
   },
   "dependencies": {
+    "@types/better-sqlite3": "^5.2.3",
+    "bufferutil": "^3.0.5",
     "cheerio": "^0.22.0",
     "cleverbot.io": "^1.0.4",
     "curl-to-json": "^1.0.24",
-    "discord.js": "^11.2.1",
-    "discord.js-commando": "github:gawdl3y/discord.js-commando",
+    "discord.js": "^11.4.2",
+    "discord.js-commando": "0.10.0",
     "events": "^1.1.1",
-    "express": "^4.15.2",
+    "express": "^4.16.4",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
-    "request": "^2.81.0"
+    "request": "^2.88.0"
   },
   "keywords": [
     "node",

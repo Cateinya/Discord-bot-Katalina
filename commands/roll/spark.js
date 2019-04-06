@@ -14,8 +14,7 @@ module.exports = class RollCommand extends Command {
             group: 'roll',
             memberName: 'spark',
             description: 'Performs a spark using 30 10-part draws.',
-            details : 'Add "SSR" to filter the spark result to keep only the SSR draws',
-            examples: ['!spark', '!spark SSR'],
+            examples: ['!spark', '!spark'],
             argsCount: 0,
             throttling: {
 				usages: 5,
@@ -27,12 +26,11 @@ module.exports = class RollCommand extends Command {
     async run(message, args) {
         var weapons = [];
         var summons = [];
-        var SSRCount = 0;
 		// Would be possible to do all the tenth draws first and then all the 270 remaining but, in the 
 		// spirit of doing the same as a real spark, let loop 30 times on a 10-draw
 		for (var i = 0; i < SPARK_DRAW_COUNT / 10; i ++) {
 			for (var j = 0; j < 10; j++ ){
-				var draw = rng.draw(j == 9, false);
+				var draw = rng.draw(j == 9);
                 var rarity = this.getRarity(draw);
                 if (rarity >= SSR) {
                     if(this.isWeapon(draw)) {
