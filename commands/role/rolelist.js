@@ -9,6 +9,7 @@ module.exports = class RoleListCommand extends Command {
                 'listrole',
             ],
             group: 'role',
+            guildOnly: true,
             memberName: 'rolelist',
             description: 'Displays a list of all available roles that can be added / removed',
             examples: ['!rolelist', '!listrole'],
@@ -23,16 +24,29 @@ module.exports = class RoleListCommand extends Command {
         
         const messages = [];
         try {
-            messages.push(await message.direct("List of all available roles:\n"
-                + Object.keys(roles.data).map(function(key){
-                    return roles.get(key);
-                }).join(", ")
-            ));
-            
-            if(message.channel.type !== 'dm') messages.push(await message.reply('Sent you a DM with the list.'));
+            var guild = message.guild;
+            if(guild != null){
+                var rolesGuild = roles.get(guild.id);
+                if(rolesGuild && Object.keys(rolesGuild).length > 0){
+                    messages.push(await message.direct("List of all available roles:\n"
+                        + Object.keys(rolesGuild).map(function(key){
+                            return rolesGuild[key];
+                        }).join(", ")
+                    ));
+
+                    messages.push(await message.reply('sent you a DM with the list.'));
+
+                } else {
+                    messages.push(await message.reply("there are no assignable roles on this server!"));
+                }
+            } else {
+                messages.push(await message.reply("you can not use this command here!"));
+            }
         } catch(err) {
-            messages.push(await message.reply('Unable to send you the help DM. You probably have DMs disabled.'));
+            console.log(err);
+            messages.push(await message.reply('unable to send you the help DM. You probably have DMs disabled.'));
         }
+        
         return messages;
     }
 }

@@ -24,23 +24,45 @@ module.exports = class EmoteListCommand extends Command {
     }
     
     async run(message, args) {
-        var location = path.normalize(__dirname + "/../../lib/images/");
-        if(!fs.existsSync(location)) {
-            message.reply("There was an error while retrieving the list of available emotes.");
-            return;
-        }
-        var emotes = this.getFiles(location).map(file => file.substring(0, file.lastIndexOf('.')));
-
         const messages = [];
-        try {
-            messages.push(await message.direct("List of all available emotes:\n"));
-            while( emotes.length ) {
-                messages.push(await message.direct("```" + emotes.splice(0, 150).join(", ") + "```"));
+
+        var id;
+        var guild = message.guild;
+        if(guild != null){
+            id = guild.id;
+        } else {
+            id = message.channel.id;
+        }
+
+        var locationGlobal = path.normalize(__dirname + "/../../lib/images/");
+        var locationServer = path.normalize(__dirname + "/../../lib/images/" + id + "/");
+
+        if(fs.existsSync(locationGlobal)) {
+            try {
+                messages.push(await message.direct("List of all available global emotes:"));
+
+                var emotesGlobal = this.getFiles(locationGlobal).map(file => file.substring(0, file.lastIndexOf('.')));
+
+                while( emotesGlobal.length ) {
+                    messages.push(await message.direct("```" + emotesGlobal.splice(0, 150).join(", ") + "```"));
+                }
+
+                if(fs.existsSync(locationServer)) {
+                    messages.push(await message.direct("List of all available server emotes:"));
+
+                    var emotesServer = this.getFiles(locationServer).map(file => file.substring(0, file.lastIndexOf('.')));
+                    
+                    while( emotesServer.length ) {
+                        messages.push(await message.direct("```" + emotesServer.splice(0, 150).join(", ") + "```"));
+                    }
+                }
+                
+                if(message.channel.type !== 'dm') messages.push(await message.reply('sent you a DM with the list'));
+            } catch(err) {
+                messages.push(await message.reply('unable to send you the help DM. You probably have DMs disabled'));
             }
-            
-            if(message.channel.type !== 'dm') messages.push(await message.reply('Sent you a DM with the list.'));
-        } catch(err) {
-            messages.push(await message.reply('Unable to send you the help DM. You probably have DMs disabled.'));
+        } else {
+            message.reply("there was an error while retrieving the list of available emotes");
         }
         return messages;
     }

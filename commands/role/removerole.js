@@ -15,6 +15,7 @@ module.exports = class RemoveRoleCommand extends Command {
             details: 'You can provide more than one role to be removed. To do so, just add them separated by a white space.',
             format: '<role> [anotherRole ...]',
             examples: ['!removeRole Wind', '!removeRoles Light Dark'],
+            argsType: "multiple",
             throttling: {
 				usages: 5,
 				duration: 10
@@ -27,54 +28,54 @@ module.exports = class RemoveRoleCommand extends Command {
         if(guild != null){
             var bot = guild.me;
             if(bot.hasPermission('MANAGE_ROLES')){
-                if(args != 'undefined' && args != null) {
-                    var argsList = args.split(/\s+/);
-                    var guildMember = message.guild.member(message.author.id);
-                    var rolesToRemove = [];
+                if(args.length > 0) {
 
-                    for (var i = 0; i < argsList.length; i++){
-                        if(argsList[i].toLowerCase() in roles.data){
-                            var arg = roles.get(argsList[i].toLowerCase());
-                            var role = message.guild.roles.find('name', arg);
+                    var guildMember = message.guild.member(message.author.id);
+                    
+                    var rolesGuild = roles.get(guild.id);
+                    if (rolesGuild == 'undefined' || rolesGuild == null) rolesGuild = [];
+                    
+                    var rolesError = [];
+
+                    for (var i = 0; i < args.length; i++){
+                        var arg = args[i];
+                        if(rolesGuild.indexOf(arg) > -1){
+                            var role = message.guild.roles.find(role => role.name === arg);
                             if (role != null) {
-                                if(guildMember.roles.find('id', role.id) != null){
+                                if(guildMember.roles.find(memberRole => memberRole.id === role.id) != null){
                                     if(bot.highestRole.comparePositionTo(role) > 0) {
-                                        rolesToRemove.push(role);
+                                        guildMember.removeRole(role).catch((e) => {
+                                            rolesError.push(arg + " (Unknown error)");
+                                            console.log(e);
+                                        });
                                     } else {
-                                        this.printErrorMessage(message, 'Sorry, I can\' handle this role...');
-                                        return;
+                                        rolesError.push(role.name + " (Higher than bot)");
                                     }
                                 } else {
-                                    this.printErrorMessage(message, 'You don\'t have this role!');
-                                    return;
+                                    rolesError.push(arg + " (Do not have it)");
                                 }
                             } else {
-                                this.printErrorMessage(message, 'Failed to remove role(s)');
-                                return;
+                                rolesError.push(arg + " (Not found)");
                             }
                         }else{
-                            this.printErrorMessage(message, "This role can not be removed.");
-                            return;
+                            rolesError.push(arg + " (Not found)");
                         }
                     }
 
-                    guildMember.removeRoles(rolesToRemove).then((gm) => {
+                    if (rolesError.length == 0){
                         this.printMessage(message, 'Role(s) removed');
-                    }).catch((e) => {
-                        this.printErrorMessage(message, 'Failed to remove role(s)');
-                        console.log(e);
-                    });
+                    } else {
+                        this.printErrorMessage(message, "some role(s) could not be removed: " + rolesError.join(", ") + "");
+                    }
+                    
                 } else {
-                    this.printErrorMessage(message, "You need to provide at least one argument.");
-                    return;
+                    this.printErrorMessage(message, "you need to provide at least one argument");
                 }
             } else {
-                this.printErrorMessage(message, "Sorry, I don't have the permission to add / remove role(s)...");
-                return;
+                this.printErrorMessage(message, "sorry, I do not have the permission to remove roles here...");
             }
         } else {
-            this.printErrorMessage(message, "You can not remove a role here!");
-            return;
+            this.printErrorMessage(message, "you can not remove a role here!");
         }
     }
 
