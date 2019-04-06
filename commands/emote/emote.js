@@ -79,6 +79,6 @@ module.exports = class EmoteCommand extends Command {
     }
 
     async printErrorMessage(originalMessage,errorMessage) {
-        await originalMessage.reply("TEST " + errorMessage);
+        await originalMessage.reply(errorMessage);
     }
 }
