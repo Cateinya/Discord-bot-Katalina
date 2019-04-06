@@ -80,10 +80,10 @@ module.exports = class AddAliasCommand extends Command {
     }
 
     async printMessage(originalMessage, newMessage) {
-        await originalMessage.channel.send("TEST " + newMessage);
+        await originalMessage.channel.send(newMessage);
     }
 
     async printErrorMessage(originalMessage,errorMessage) {
-        await originalMessage.reply("TEST " + errorMessage);
+        await originalMessage.reply(errorMessage);
     }
 }

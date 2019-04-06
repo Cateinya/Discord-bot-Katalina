@@ -5,7 +5,7 @@ module.exports = class Roll10Command extends Command {
     constructor(client) {
         super(client, {
             name: 'roll10',
-            group: 'roll10',
+            group: 'roll',
             memberName: 'roll10',
             description: 'Performs a Premium 10-part draw.',
             examples: ['!roll10'],
