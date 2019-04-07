@@ -20,6 +20,6 @@ module.exports = class RollCommand extends Command {
         var result = rng.draw(false);
         if(result.includes("SS Rare")) result = "<" + result + ">"; 
 
-        message.channel.send("```md\nYou got " + result.join(", ")+"\n```");
+        message.channel.send("```md\nYou got " + result +"\n```");
     }
 }
