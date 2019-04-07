@@ -21,10 +21,14 @@ module.exports = class Roll10Command extends Command {
 
         for (var j = 0; j < 10; j++ ){
             var result = rng.draw((j == 9));
-            if(result.includes("SS Rare")) result = "<" + result + ">";
-            results.push(result);
+            results.push(this.createDescription(result));
         }
 
-        message.channel.send("```md\nYou got " + results.join(", ")+"\n```");
+        message.channel.send("```ml\nYou Got:\n\n" + results.join(", ")+"\n```");
     }
+
+    createDescription(item) {
+        var rateUp = (item["incidence"]) ? " ↑" : "";
+		return (item["category_name"] == "Character Weapons") ? item["rarity"] + " " + item["character_name"] + rateUp + " (\"" + item["name"] + "\")" : item["rarity"] + " " + item["name"] + rateUp;
+	}
 }

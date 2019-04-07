@@ -26,8 +26,6 @@ module.exports = class UpdateRatesCommand extends Command {
     }
     
     async run(message, arg) {
-        var fileName = "rates.json";
-
         if (message.attachments.size > 0){
             var fileURL = message.attachments.first().url;
         }

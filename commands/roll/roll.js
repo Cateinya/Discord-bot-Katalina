@@ -18,8 +18,15 @@ module.exports = class RollCommand extends Command {
     
     async run(message, args) {
         var result = rng.draw(false);
-        if(result.includes("SS Rare")) result = "<" + result + ">"; 
 
-        message.channel.send("```md\nYou got " + result +"\n```");
+        
+        var msg = this.createDescription(result);
+
+        message.channel.send("```ml\nYou Got " + msg +"\n```");
     }
+
+    createDescription(item) {
+        var rateUp = (item["incidence"]) ? " ↑" : "";
+		return (item["category_name"] == "Character Weapons") ? item["rarity"] + " " + item["character_name"] + rateUp + " (\"" + item["name"] + "\")" : item["rarity"] + " " + item["name"] + rateUp;
+	}
 }
