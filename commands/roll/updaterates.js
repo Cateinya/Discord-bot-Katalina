@@ -29,7 +29,6 @@ module.exports = class UpdateRatesCommand extends Command {
         var fileName = "rates.json";
 
         if (message.attachments.size > 0){
-            console.log(message.attachments.first().url);
             var fileURL = message.attachments.first().url;
         }
         else if (arg){
