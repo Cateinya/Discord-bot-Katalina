@@ -69,7 +69,6 @@ module.exports = class EmoteCommand extends Command {
             } else {
 
                 var locationServer = path.normalize(__dirname + "/../../lib/images/" + id + "/" + emote + ".png");
-                console.log(locationServer);
                 if (fs.existsSync(locationServer)){
                     location = locationServer;
                 }
