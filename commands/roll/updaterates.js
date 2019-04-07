@@ -1,7 +1,6 @@
 const { Command } = require('discord.js-commando');
 var request = require('request');
 var curlToJson = require('curl-to-json');
-var fs = require('fs');
 const rateParser = require('../../lib/rateparser');
 
 module.exports = class UpdateRatesCommand extends Command {
@@ -26,31 +25,32 @@ module.exports = class UpdateRatesCommand extends Command {
     }
     
     async run(message, arg) {
+        var fileURL;
+
         if (message.attachments.size > 0){
-            var fileURL = message.attachments.first().url;
+            fileURL = message.attachments.first().url;
         }
         else if (arg){
             try{
-                var fileURL = curlToJson(arg);
+                fileURL = curlToJson(arg);
             } catch (err) {
                 this.printErrorMessage(message, "an error occured while retrieving the cURL. Did you submit a correct one?");
             }
             
         } else {
             this.printErrorMessage(message, "you need to either provide an attachment or an URL!");
+            return;
         }
 
         if (fileURL != 'undefined' && fileURL){
             request.get(fileURL, function(error, response, body) {
                 if(error){
-                    this.printErrorMessage(message, "an error ocurred while retrieving the rates. Did you submit the correct URL or file?");
-                    return;
+                    message.reply("an error ocurred while retrieving the rates. Did you submit the correct URL or file?");
                 } else {
                     if (rateParser.parse(body)){
                         message.channel.send("Rates updated!");
                     } else {
-                        this.printErrorMessage(message, "an error occured while processing the rates. Did you submit the correct JSON file?")
-                        return;
+                        message.reply("an error ocurred while retrieving the rates. Did you submit the correct URL or file?");
                     }
                 }
             });
