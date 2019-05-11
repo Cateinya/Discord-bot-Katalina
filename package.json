@@ -28,5 +28,9 @@
     "discord",
     "bot"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^12.0.0",
+    "eslint": "^5.16.0"
+  }
 }

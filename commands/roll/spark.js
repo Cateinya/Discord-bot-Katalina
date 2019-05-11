@@ -1,5 +1,6 @@
 const { Command } = require('discord.js-commando');
 const rng = require('../../lib/rng');
+const ratesAliases = require('../../lib/ratesaliases');
 
 const R = 1;
 const SR = 2;
@@ -14,7 +15,10 @@ module.exports = class RollCommand extends Command {
             group: 'roll',
             memberName: 'spark',
             description: 'Performs a spark using 30 10-part draws.',
-            examples: ['!spark', '!spark'],
+            details: 'You can add an alias to use specific rates insted of the latest.',
+            examples: ['!spark', '!spark Flash'],
+            argsCount: 1,
+            argsType: "single",
             throttling: {
 				usages: 5,
 				duration: 10
@@ -23,13 +27,35 @@ module.exports = class RollCommand extends Command {
     }
     
     async run(message, args) {
+        var ratesID;
+
+        var id;
+        var guild = message.guild;
+        if(guild != null){
+            id = guild.id;
+        } else {
+            id = message.channel.id;
+        }
+
+        var ratesAliasesServer = ratesAliases.get(id);
+        if (ratesAliasesServer == 'undefined' || ratesAliasesServer == null) ratesAliasesServer = {};
+        
+        for (var ratesalias in ratesAliasesServer) {
+            if (args.startsWith(ratesalias)) {
+                ratesID = ratesAliasesServer[ratesalias];
+                break;
+            }
+        }
+
+        if (ratesID == 'undefined' || ratesID == null) ratesID = "latest";
+
         var draws = {"weapons" : {}, "noncharacter_weapons" : {}, "summons" : {}};
         var total = 0;
 		// Would be possible to do all the tenth draws first and then all the 270 remaining but, in the 
 		// spirit of doing the same as a real spark, let loop 30 times on a 10-draw
 		for (var i = 0; i < SPARK_DRAW_COUNT / 10; i ++) {
 			for (var j = 0; j < 10; j++ ){
-                var draw = rng.draw(j == 9);
+                var draw = rng.draw(ratesID, j == 9);
                 draw["draw_count"] = 1; 
                 if (draw["rarity"] == "SS Rare") {
                     total += 1;
@@ -84,6 +110,8 @@ module.exports = class RollCommand extends Command {
         msg += (noncharacter_weapons.length > 0) ? "\n\n'Non_Character_Weapons': " + noncharacter_weapons.join(", ") : "";
 
         msg += (summons.length > 0) ? "\n\n'Summons': " + summons.join(", ") : "";
+
+        msg += "\n\n(on rates: " + ratesID + ")"; 
 
         msg += "\n```";
 

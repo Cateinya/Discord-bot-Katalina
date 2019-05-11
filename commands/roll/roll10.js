@@ -1,5 +1,6 @@
 const { Command } = require('discord.js-commando');
 const rng = require('../../lib/rng');
+const ratesAliases = require('../../lib/ratesaliases');
 
 module.exports = class Roll10Command extends Command {
     constructor(client) {
@@ -8,7 +9,10 @@ module.exports = class Roll10Command extends Command {
             group: 'roll',
             memberName: 'roll10',
             description: 'Performs a Premium 10-part draw.',
-            examples: ['!roll10'],
+            details: 'You can add an alias to use specific rates insted of the latest.',
+            examples: ['!roll10', '!roll10 Flash'],
+            argsCount: 1,
+            argsType: "single",
             throttling: {
 				usages: 5,
 				duration: 10
@@ -17,10 +21,32 @@ module.exports = class Roll10Command extends Command {
     }
     
     async run(message, args) {
+        var ratesID;
+
+        var id;
+        var guild = message.guild;
+        if(guild != null){
+            id = guild.id;
+        } else {
+            id = message.channel.id;
+        }
+
+        var ratesAliasesServer = ratesAliases.get(id);
+        if (ratesAliasesServer == 'undefined' || ratesAliasesServer == null) ratesAliasesServer = {};
+        
+        for (var ratesalias in ratesAliasesServer) {
+            if (args.startsWith(ratesalias)) {
+                ratesID = ratesAliasesServer[ratesalias];
+                break;
+            }
+        }
+
+        if (ratesID == 'undefined' || ratesID == null) ratesID = "latest";
+
         var draws = {"weapons" : {}, "noncharacter_weapons" : {}, "summons" : {}};
 
         for (var j = 0; j < 10; j++ ){
-            var draw = rng.draw((j == 9));
+            var draw = rng.draw(ratesID, j == 9);
 
             if(draw["category_name"] == "Summon") {
                 if (draws["summons"][draw["name"]]) {
@@ -70,6 +96,8 @@ module.exports = class Roll10Command extends Command {
         msg += (noncharacter_weapons.length > 0) ? "\n\n'Non_Character_Weapons': " + noncharacter_weapons.join(", ") : "";
 
         msg += (summons.length > 0) ? "\n\n'Summons': " + summons.join(", ") : "";
+
+        msg += "\n\n(on rates: " + ratesID + ")"; 
 
         msg += "\n```";
 

@@ -63,6 +63,7 @@ client.registry
           ['emote', 'Emote'],
           ['alias', 'Alias'],
           ['role', 'Role'],
+          ['rates', 'Rates'],
           ['roll', 'Roll'],
           ['admin', 'Admin']
       ])

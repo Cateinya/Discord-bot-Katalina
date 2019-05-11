@@ -1,17 +1,21 @@
 const { Command } = require('discord.js-commando');
-const aliases = require('../../lib/aliases');
+const ratesAliases = require('../../lib/ratesaliases');
 
-module.exports = class AliasListCommand extends Command {
+module.exports = class RatesAliasListCommand extends Command {
     constructor(client) {
         super(client, {
-            name: 'aliaslist',
+            name: 'ratesaliaslist',
             aliases: [
-                'listalias'
+                'listaliasrates',
+                'listratesalias',
+                'ratesaliaseslist',
+                'listaliasesrates',
+                'listratesaliases'
             ],
-            group: 'alias',
-            memberName: 'aliaslist',
-            description: 'Displays a list of all available aliases',
-            examples: ['!aliaslist', '!listalias'],
+            group: 'rates',
+            memberName: 'ratesaliaslist',
+            description: 'Displays a list of all available aliases for rates',
+            examples: ['!ratesaliaslist', '!listaliasrates'],
             throttling: {
 				usages: 1,
 				duration: 10
@@ -31,10 +35,10 @@ module.exports = class AliasListCommand extends Command {
                 id = message.channel.id;
             } 
 
-            var aliasesServer = aliases.get(id);
-            if(aliasesServer && Object.keys(aliasesServer).length > 0){
+            var ratesAliasesServer = ratesAliases.get(id);
+            if(ratesAliasesServer && Object.keys(ratesAliasesServer).length > 0){
                 messages.push(await message.direct("List of all available aliases:\n"
-                    + Object.entries(aliasesServer).map(function([key, value]){
+                    + Object.entries(ratesAliasesServer).map(function([key, value]){
                         return key + " (" + value + ")";
                     }).join(", ")
                 ));
@@ -42,7 +46,7 @@ module.exports = class AliasListCommand extends Command {
                 if(message.channel.type !== 'dm') messages.push(await message.reply('sent you a DM with the list.'));
 
             } else {
-                messages.push(await message.reply("there are no aliases on this server!"));
+                messages.push(await message.reply("there are no aliases for rates on this server!"));
             }
         } catch(err) {
             console.log(err);
