@@ -1,7 +1,6 @@
 const { Command } = require('discord.js-commando');
 const fs = require('fs');
 const path = require('path');
-const aliases = require('../../lib/aliases');
 
 module.exports = class EmoteListCommand extends Command {
     constructor(client) {
