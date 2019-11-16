@@ -1,6 +1,8 @@
 const { Command } = require('discord.js-commando');
 const rng = require('../../lib/rng');
+const rates = require('../../lib/ratesdata');
 const ratesAliases = require('../../lib/ratesaliases');
+const ratesInfo = require('../../lib/ratesinfo');
 
 module.exports = class Roll10Command extends Command {
     constructor(client) {
@@ -21,6 +23,7 @@ module.exports = class Roll10Command extends Command {
     }
     
     async run(message, args) {
+        var ratesAlias;
         var ratesID;
 
         var id;
@@ -34,14 +37,23 @@ module.exports = class Roll10Command extends Command {
         var ratesAliasesServer = ratesAliases.get(id);
         if (ratesAliasesServer == 'undefined' || ratesAliasesServer == null) ratesAliasesServer = {};
         
-        for (var ratesalias in ratesAliasesServer) {
-            if (args.startsWith(ratesalias)) {
-                ratesID = ratesAliasesServer[ratesalias];
+        for (var ratesaliasServer in ratesAliasesServer) {
+            if (args.startsWith(ratesaliasServer)) {
+                ratesAlias = ratesaliasServer;
+                ratesID = ratesAliasesServer[ratesaliasServer];
                 break;
             }
         }
 
-        if (ratesID == 'undefined' || ratesID == null) ratesID = "latest";
+        if (ratesID == 'undefined' || ratesID == null) {
+            var IDs = Object.keys(rates.data);
+            ratesID = IDs.pop();
+        }
+
+        var ratesInfoServer = ratesInfo.get(id);
+        if (ratesInfoServer == 'undefined' || ratesInfoServer == null) ratesInfoServer = {};
+
+        var info = ratesInfoServer[ratesID]; // can be null
 
         var draws = {"weapons" : {}, "noncharacter_weapons" : {}, "summons" : {}};
 
@@ -97,7 +109,7 @@ module.exports = class Roll10Command extends Command {
 
         msg += (summons.length > 0) ? "\n\n'Summons': " + summons.join(", ") : "";
 
-        msg += "\n\n(on rates: " + ratesID + ")"; 
+        msg += "\n\n" + this.createRatesDescription(ratesID, ratesAlias, info); 
 
         msg += "\n```";
 
@@ -109,5 +121,12 @@ module.exports = class Roll10Command extends Command {
         var dupes = (item["draw_count"] > 1) ? " x" + item["draw_count"] : "";
 
 		return (item["category_name"] == "Character Weapons") ? item["rarity"] + " " + item["character_name"] + rateUp + " (\"" + item["name"] + "\")" + dupes : "\"" + item["rarity"] + " " + item["name"] + "\"" + rateUp + dupes;
-	}
+    }
+    
+    createRatesDescription(ratesID, ratesAlias, ratesInfo) {
+        return "(on rates: "
+            + ((ratesAlias != 'undefined' && ratesAlias != null) ? '"' + ratesAlias + '" - ' : "") 
+            + ((ratesInfo != 'undefined' && ratesInfo != null) ? '"' + ratesInfo + '" - ' : "")
+            + ratesID + ")";
+    }
 }

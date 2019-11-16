@@ -20,7 +20,7 @@ module.exports = class RoleListCommand extends Command {
         });
     }
     
-    async run(message, args) {
+    async run(message) {
         
         const messages = [];
         try {
