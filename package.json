@@ -3,22 +3,19 @@
   "version": "0.0.1",
   "description": "a bot for Discord",
   "engines": {
-    "node": "8.5.0"
+    "node": ">=12"
   },
   "main": "index.js",
   "scripts": {
+    "test": "npm run lint",
+    "lint": "eslint . --ext .js --ext .json",
     "start": "node index.js"
   },
   "dependencies": {
-    "@types/better-sqlite3": "^5.2.3",
-    "bufferutil": "^3.0.5",
-    "cheerio": "^0.22.0",
     "cleverbot.io": "^1.0.4",
     "curl-to-json": "^1.0.24",
-    "discord.js": "^11.4.2",
-    "discord.js-commando": "0.10.0",
-    "events": "^1.1.1",
-    "express": "^4.16.4",
+    "discord.js": "github:discordjs/discord.js",
+    "discord.js-commando": "github:discordjs/Commando",
     "fs": "0.0.1-security",
     "path": "^0.12.7",
     "request": "^2.88.0"
@@ -30,7 +27,18 @@
   ],
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^12.0.0",
-    "eslint": "^5.16.0"
+    "eslint": "^5.16.0",
+    "eslint-config-amber": "^2.0.0",
+    "eslint-plugin-json": "^1.4.0",
+    "typescript": "^2.6.2"
+  },
+  "eslintConfig": {
+    "extends": "amber",
+    "plugins": [
+      "json"
+    ],
+    "parserOptions": {
+      "sourceType": "module"
+    }
   }
 }

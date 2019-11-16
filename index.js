@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
-
 const commando = require('discord.js-commando');
 const client = new commando.Client();
+
+const path = require('path');
 
 const tokens = require('./tokens');
 
@@ -9,9 +9,9 @@ const EventEmitter = require('events');
 class MyEmitter extends EventEmitter {}
 const emitter = new MyEmitter();
 
-const cleverbot = require('cleverbot.io');
+/*const cleverbot = require('cleverbot.io');
 var bot = new cleverbot(tokens['cleverbot']['user'],tokens['cleverbot']['key']);
-bot.setNick("Katalina");
+bot.setNick("Katalina");*/
 
 client
       .on('error', console.error)
@@ -70,14 +70,14 @@ client.registry
       .registerDefaultTypes()
       .registerDefaultGroups()
       .registerDefaultCommands({prefix:false, eval_:false, commandState:false})
-      .registerCommandsIn(__dirname + "/commands");
+      .registerCommandsIn(path.join(__dirname, "/commands"));
 
 
 client.login(tokens['discord']);
 
 process.on('unhandledRejection', console.error);
 
-bot.create(function (err, response) {
+/*bot.create(function () {
 	emitter.on('request', function(line) {
 		bot.ask(line, function (err, response) {
 			if (err) throw response;
@@ -86,4 +86,4 @@ bot.create(function (err, response) {
 	}).on('close',function(){
 		process.exit(0);
 	});
-});
+});*/

@@ -19,7 +19,7 @@ module.exports = class AliasListCommand extends Command {
         });
     }
     
-    async run(message, args) {
+    async run(message) {
 
         const messages = [];
         try {
