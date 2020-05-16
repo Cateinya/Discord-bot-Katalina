@@ -32,7 +32,7 @@ module.exports = class UpdateRatesCommand extends Command {
         if (arg){
             if (message.attachments.size > 0){
                 fileURL = message.attachments.first().url;
-                
+
                 var regex = /([0-9]+)/g;
                 if (regex.test(arg)) {
                     rawRatesID = arg;
@@ -63,7 +63,6 @@ module.exports = class UpdateRatesCommand extends Command {
                 if(error){
                     message.reply("an error ocurred while retrieving the rates. Did you submit the correct URL or file?");
                 } else {
-                    console.log(body);
                     var rawRates = JSON.parse(body);
                     var tempRatesData = ratesData.data[rawRatesID];
                     
