@@ -32,8 +32,9 @@ module.exports = class UpdateRatesCommand extends Command {
         if (arg){
             if (message.attachments.size > 0){
                 fileURL = message.attachments.first().url;
-
-                if (Number.isInteger(arg)) {
+                
+                var regex = /([0-9]+)/g;
+                if (regex.test(arg)) {
                     rawRatesID = arg;
                 } else {
                     this.printErrorMessage(message, arg + " is not a valid rates ID!");
@@ -41,6 +42,7 @@ module.exports = class UpdateRatesCommand extends Command {
                 }
             } else {
                 try{
+                    arg = arg.replace(/\s*?\\\s*?[\r\n]+\s*?/g, ' ');
                     fileURL = curlToJson(arg);
 
                     var regex = /\/([0-9]+)\//g;
@@ -61,6 +63,7 @@ module.exports = class UpdateRatesCommand extends Command {
                 if(error){
                     message.reply("an error ocurred while retrieving the rates. Did you submit the correct URL or file?");
                 } else {
+                    console.log(body);
                     var rawRates = JSON.parse(body);
                     var tempRatesData = ratesData.data[rawRatesID];
                     
