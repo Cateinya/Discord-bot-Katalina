@@ -2,15 +2,15 @@
 node_modules
 npm-debug.log
 
+# Typescript build
+build
+
 # Local development
 *.env
 *.dev
+.vscode
 .DS_Store
+.eslintrc.cjs
 
-# Docker
-Dockerfile
-docker-compose.yml
-
-# Tokens file
-tokens.js
-.eslintrc.json
+# Config file
+config.json

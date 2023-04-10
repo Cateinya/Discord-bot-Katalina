@@ -1,44 +1,50 @@
 {
-  "name": "discord-bot",
-  "version": "0.0.1",
-  "description": "a bot for Discord",
-  "engines": {
-    "node": ">=12"
-  },
-  "main": "index.js",
-  "scripts": {
-    "test": "npm run lint",
-    "lint": "eslint . --ext .js --ext .json",
-    "start": "node index.js"
-  },
-  "dependencies": {
-    "cleverbot.io": "^1.0.4",
-    "curl-to-json": "^1.0.24",
-    "discord.js": "github:discordjs/discord.js",
-    "discord.js-commando": "github:discordjs/Commando",
-    "fs": "0.0.1-security",
-    "path": "^0.12.7",
-    "request": "^2.88.0"
-  },
-  "keywords": [
-    "node",
-    "discord",
-    "bot"
-  ],
-  "license": "MIT",
-  "devDependencies": {
-    "eslint": "^5.16.0",
-    "eslint-config-amber": "^2.0.0",
-    "eslint-plugin-json": "^1.4.0",
-    "typescript": "^2.6.2"
-  },
-  "eslintConfig": {
-    "extends": "amber",
-    "plugins": [
-      "json"
+    "name": "discord-bot",
+    "version": "2.0.0",
+    "description": "a bot for Discord",
+    "engines": {
+        "node": ">=18"
+    },
+    "main": "index.js",
+    "scripts": {
+        "build": "tsc --build --clean",
+        "test": "npm run lint",
+        "lint": "eslint . --ext .ts --ext .json",
+        "start": "node build/index.js"
+    },
+    "keywords": [
+        "node",
+        "typescript",
+        "discord",
+        "bot"
     ],
-    "parserOptions": {
-      "sourceType": "module"
+    "license": "MIT",
+    "eslintConfig": {
+        "extends": "amber",
+        "plugins": [
+            "json"
+        ],
+        "parserOptions": {
+            "sourceType": "module"
+        }
+    },
+    "dependencies": {
+        "@discordjs/rest": "^1.6.0",
+        "chalk": "^4.1.2",
+        "cross-fetch": "^3.1.5",
+        "discord.js": "^14.8.0",
+        "fs": "^0.0.1-security",
+        "path": "^0.12.7"
+    },
+    "devDependencies": {
+        "@types/node": "^18.15.11",
+        "@typescript-eslint/eslint-plugin": "^5.57.1",
+        "@typescript-eslint/parser": "^5.57.1",
+        "eslint": "^8.38.0",
+        "eslint-plugin-json": "^3.1.0",
+        "typescript": "^4.9.5"
+    },
+    "overrides": {
+        "discord-api-types": "0.37.20"
     }
-  }
 }
