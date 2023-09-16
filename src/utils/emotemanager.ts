@@ -1,4 +1,4 @@
-import { join } from "path";
+import { join, sep } from "path";
 import { color, findInDir } from "./functions.js";
 import { aliases } from "./dataobject.js";
 import { existsSync } from "fs";
@@ -18,7 +18,9 @@ function initEmoteList() {
     serverEmotes = {};
 
     let serverEmoteCount = 0;
-    const filterServerEmote = /\\lib\\images\\([^\\]+)\\/;
+
+    // RexExp : /lib/images/([^/])/
+    const filterServerEmote = new RegExp(`\\${sep}lib\\${sep}images\\${sep}([^\\${sep}]+)\\${sep}`);
 
     if (!existsSync(imageLocation)) {
         console.error(`[initEmoteList] Cannot find directory "${imageLocation}"`);
@@ -27,7 +29,7 @@ function initEmoteList() {
     const fileList = findInDir(imageLocation, /\.png$/);
 
     fileList.forEach(file => {
-        const emote = { name: file.substring(file.lastIndexOf("\\") + 1, file.lastIndexOf(".")), location: file };
+        const emote = { name: file.substring(file.lastIndexOf(sep) + 1, file.lastIndexOf(".")), location: file };
         const match = filterServerEmote.exec(emote.location);
         if (match) {
             const server_id = match[1];
