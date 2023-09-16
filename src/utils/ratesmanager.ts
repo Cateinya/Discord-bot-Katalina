@@ -49,7 +49,7 @@ export function formatDrawResults(draws: Draws, show_rarity: boolean, ratesID: s
 
 export function createDrawDescription(item: NonCharacterWeapon | CharacterWeapon | Summon, show_rarity: boolean) {
     const rarity = (show_rarity) ? item["rarity"] + " " : "";
-    const season_message = (isSummon(item)) ? " " + item["season_message"] : "";
+    const season_message = (isSummon(item) && item["season_message"]) ? " " + item["season_message"] : "";
     const rateUp = (item["incidence"]) ? " ↑" : "";
     const dupes = (item["draw_count"] && item["draw_count"] > 1) ? " x" + item["draw_count"] : "";
 
